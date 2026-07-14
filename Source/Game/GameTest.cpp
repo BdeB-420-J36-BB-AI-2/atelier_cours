@@ -49,29 +49,33 @@ namespace Game
 
     void GameTest::handleInput()
     {
-       // Mouse
-       if (IsMouseButtonDown(MOUSE_LEFT_BUTTON))
-           _player.setPosition(GetMouseX(), GetMouseY());
+        // Mouse
+        if (IsMouseButtonDown(MOUSE_LEFT_BUTTON))
+            _player.setPosition(GetMouseX(), GetMouseY());
 
-       // Direction pressed
-       //HandlePlayerDirection();
+        // Direction pressed
+        //HandlePlayerDirection();
 
-       int key = GetKeyPressed();
-       switch (key)
-       {
-       case KEY_ESCAPE:
-           _loop = false;
-           break;
-       }
+        _loop = !WindowShouldClose();
     }
 
     void GameTest::update()
     {
+        if (_gameComplete)
+            return;
+
         if (!_tree->isComplete())
             _tree->tick();
+        else
+            _gameComplete = true;
 
         // Physics
         _player.update();
+    }
+
+    void GameTest::DrawGameComplete()
+    {
+        DrawText("Game Complete!", SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 40, GREEN);
     }
 
     void GameTest::render()
@@ -80,6 +84,8 @@ namespace Game
         {
             ClearBackground(BLANK);
             _player.render();
+            if (_gameComplete)
+                DrawGameComplete();
             DrawFPS(20, 20);
         }
         EndDrawing();

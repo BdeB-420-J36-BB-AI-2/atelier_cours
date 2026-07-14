@@ -14,6 +14,7 @@ namespace Game
     {
         BehaviourTree::BehaviourTree* _tree;
         Player _player;
+        bool _gameComplete = false;
     public:
         GameTest();
         ~GameTest() override;
@@ -21,6 +22,7 @@ namespace Game
 
         void handleInput() override;
         void update() override;
+        void DrawGameComplete();
         void render() override;
     }; 
 }
