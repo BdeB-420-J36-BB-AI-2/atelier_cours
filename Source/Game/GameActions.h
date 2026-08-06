@@ -2,6 +2,9 @@
 #include <raylib.h>
 
 #include "Player.h"
+#include "Raven_Bot.h"
+#include "Raven_SteeringBehaviors.h"
+#include "Vector2D.h"
 #include "../Core/Actor.h"
 #include "../Core/Globals.h"
 #include "BehaviourTree/Core/BlackBoard.h"
@@ -104,6 +107,32 @@ namespace Game
                 return BehaviourTree::NodeState::SUCCESS;
 
             player->move();
+            return BehaviourTree::NodeState::RUNNING;
+        }
+    };
+
+    class MoveBotTo : public BehaviourTree::LeafNode
+    {
+        Vector2D _target;
+        Raven_Bot* _bot;
+
+    public:
+        MoveBotTo(Raven_Bot* bot, Vector2D target)
+            : _bot{ bot }, _target{ target }
+        {
+        }
+
+        BehaviourTree::NodeState tick(BehaviourTree::BlackBoard& bb) override
+        {
+            if (_bot->isAtPosition(_target))
+            {
+                _bot->GetSteering()->ArriveOff();
+                return BehaviourTree::NodeState::SUCCESS;
+            }
+
+            _bot->GetSteering()->ArriveOn();
+            _bot->GetSteering()->SetTarget(_target);
+            _bot->UpdateMovement();
             return BehaviourTree::NodeState::RUNNING;
         }
     };

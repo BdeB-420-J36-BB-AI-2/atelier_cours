@@ -1,4 +1,9 @@
 #pragma once
+#include <vector>
+
+struct Vector2D;
+class Raven_Bot;
+class Raven_Scene;
 
 namespace BehaviourTree
 {
@@ -14,5 +19,6 @@ namespace Game
     public:
         static BehaviourTree::BehaviourTree* TestMovePlayer(Player* player);
         static BehaviourTree::BehaviourTree* TestMovePlayerToLimit(Player* player);
+        static BehaviourTree::BehaviourTree* TestMoveBotTo(Raven_Bot* bot, Raven_Scene* scene);
     };
 }

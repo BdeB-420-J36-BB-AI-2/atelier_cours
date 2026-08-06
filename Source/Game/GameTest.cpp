@@ -2,10 +2,13 @@
 
 #include <raylib.h>
 
+#include "GameActions.h"
 #include "GameBuilders.h"
 #include "BehaviourTree/Builders.h"
 
 #include "GameConfig.h"
+#include "Raven_Map.h"
+#include "Raven_Scene.h"
 
 namespace Game
 {
@@ -15,9 +18,16 @@ namespace Game
         InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "GameTest");
         SetTargetFPS(30);
 
-        _tree = GameBuilders::TestMovePlayerToLimit(&_player);
-        //_tree = BehaviourTree::Builders::TestParallel();
         _player.setHealth(10);
+
+        _scene = new Raven_Scene();
+        _scene->LoadMap("maps/blank400x400.map");
+
+        _bot = _scene->GetAllBots().front();
+        _bot->Spawn(Vector2D(margin, margin));
+
+        _tree = GameBuilders::TestMoveBotTo(_bot, _scene);
+
         _loop = true;
     }
 
@@ -25,6 +35,8 @@ namespace Game
     {
         delete _tree;
         _tree = nullptr;
+        delete _scene;
+        _scene = nullptr;
         CloseWindow();
     }
 
@@ -70,12 +82,12 @@ namespace Game
             _gameComplete = true;
 
         // Physics
-        _player.update();
+        //_player.update();
     }
 
     void GameTest::DrawGameComplete()
     {
-        DrawText("Game Complete!", SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 40, GREEN);
+        DrawText("Game Complete!", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 40, GREEN);
     }
 
     void GameTest::render()
@@ -83,7 +95,8 @@ namespace Game
         BeginDrawing();
         {
             ClearBackground(BLANK);
-            _player.render();
+            //_player.render();
+            _scene->Render();
             if (_gameComplete)
                 DrawGameComplete();
             DrawFPS(20, 20);

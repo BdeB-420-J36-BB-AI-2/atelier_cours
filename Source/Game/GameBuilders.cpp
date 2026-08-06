@@ -3,7 +3,10 @@
 
 #include "GameActions.h"
 #include "GameConfig.h"
+#include "GameTest.h"
 #include "Player.h"
+#include "Raven_Map.h"
+#include "Raven_Scene.h"
 #include "BehaviourTree/ActionLeaves.h"
 #include "BehaviourTree/Composites.h"
 #include "BehaviourTree/DummyLeaves.h"
@@ -55,4 +58,25 @@ namespace Game
         return bt;
     }
 
+    BehaviourTree::BehaviourTree* GameBuilders::TestMoveBotTo(Raven_Bot* bot, Raven_Scene* scene)
+    {
+        auto bt = new BehaviourTree::BehaviourTree();
+
+        const auto mapWidth = scene->GetMap()->GetSizeX();
+        const auto mapHeight = scene->GetMap()->GetSizeY();
+
+        const std::vector<Vector2D> wayPoints = {
+            Vector2D(GameTest::margin, GameTest::margin),
+            Vector2D(mapWidth - GameTest::margin, GameTest::margin),
+            Vector2D(mapWidth - GameTest::margin, mapHeight - GameTest::margin),
+            Vector2D(GameTest::margin, mapHeight - GameTest::margin)
+        };
+
+        auto sequence = new BehaviourTree::Sequence();
+        for (auto way_point : wayPoints)
+            sequence->add(new MoveBotTo(bot, way_point));
+
+        bt->setRootNode(sequence);
+        return bt;
+    }
 }
