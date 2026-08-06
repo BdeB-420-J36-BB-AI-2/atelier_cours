@@ -2,13 +2,12 @@
 #include "../../Core/Globals.h"
 #include "Core/BlackBoard.h"
 #include "Core/DecoratorNode.h"
-#include "Core/LeafNode.h"
 
 using namespace Core;
 
-namespace Game
+namespace BehaviourTree
 {
-    class Repeater : public BehaviourTree::DecoratorNode
+    class Repeater : public DecoratorNode
     {
         uint _maxLoop;
         uint _loop = 0;
@@ -18,13 +17,18 @@ namespace Game
             : DecoratorNode(node), _maxLoop(maxloop)
         {}
 
-        BehaviourTree::NodeState tick(BehaviourTree::BlackBoard& bb) override
+        NodeState tick(BlackBoard& bb) override
         {
+            NodeState state = _child->tick(bb);
+
+            if (state == NodeState::RUNNING)
+                return NodeState::RUNNING;
+
             if (_loop++ < _maxLoop)
-                return BehaviourTree::NodeState::RUNNING;
+                return NodeState::RUNNING;
 
             _loop = 0;
-            return BehaviourTree::NodeState::SUCCESS;
+            return NodeState::SUCCESS;
         }
     };
 }
