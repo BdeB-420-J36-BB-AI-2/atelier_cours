@@ -24,7 +24,7 @@ namespace BehaviourTree
             if (state == NodeState::RUNNING)
                 return NodeState::RUNNING;
 
-            if (_loop++ < _maxLoop)
+            if (_maxLoop == 0 || _loop++ < _maxLoop)
                 return NodeState::RUNNING;
 
             _loop = 0;
