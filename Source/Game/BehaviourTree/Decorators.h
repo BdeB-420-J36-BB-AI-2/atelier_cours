@@ -1,28 +1,29 @@
 #pragma once
 #include "../../Core/Globals.h"
 #include "Core/BlackBoard.h"
+#include "Core/DecoratorNode.h"
 #include "Core/LeafNode.h"
 
 using namespace Core;
 
 namespace Game
 {
-    class Delay : public BehaviourTree::LeafNode
+    class Repeater : public BehaviourTree::DecoratorNode
     {
-        float _duration;
-        float _elapsed = 0.f;
+        uint _maxLoop;
+        uint _loop = 0;
 
     public:
-        Delay(float duration)
-            : _duration(duration) { }
+        Repeater(Node* node, uint maxloop = 0)
+            : DecoratorNode(node), _maxLoop(maxloop)
+        {}
 
         BehaviourTree::NodeState tick(BehaviourTree::BlackBoard& bb) override
         {
-            _elapsed += GetFrameTime();
-            if (_elapsed < _duration)
+            if (_loop++ < _maxLoop)
                 return BehaviourTree::NodeState::RUNNING;
 
-            _elapsed = 0.f;
+            _loop = 0;
             return BehaviourTree::NodeState::SUCCESS;
         }
     };

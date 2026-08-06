@@ -82,22 +82,6 @@ namespace BehaviourTree
             return bt;
         }
 
-        static BehaviourTree* TestRepeater()
-        {
-            auto bt = new BehaviourTree();
-
-            auto sn = new Sequence();
-            auto repeater = new Game::Repeater(5);
-            sn->add(new DummySuccess());
-            sn->add(repeater);
-            sn->add(new DummySuccess());
-            sn->add(repeater);
-
-            bt->setRootNode(sn);
-
-            return bt;
-        }
-
         static BehaviourTree* TestDelay()
         {
             auto bt = new BehaviourTree();
