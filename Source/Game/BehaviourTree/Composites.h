@@ -48,6 +48,8 @@ namespace BehaviourTree
                 if (state != NodeState::FAILURE)
                     return state;
             }
+
+            _currentIndex = 0;
             return NodeState::FAILURE;
         }
     };
