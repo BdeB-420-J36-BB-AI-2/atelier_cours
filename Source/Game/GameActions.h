@@ -133,6 +133,7 @@ namespace Game
             _bot->GetSteering()->ArriveOn();
             _bot->GetSteering()->SetTarget(_target);
             _bot->UpdateMovement();
+            _bot->RotateFacingTowardPosition(_bot->Pos() + _bot->Heading());
             return BehaviourTree::NodeState::RUNNING;
         }
     };
