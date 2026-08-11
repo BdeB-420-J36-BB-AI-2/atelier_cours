@@ -118,7 +118,7 @@ namespace Game
 
     public:
         MoveBotTo(Raven_Bot* bot, Vector2D target)
-            : _bot{ bot }, _target{ target }
+            : _bot{bot}, _target{target}
         {
         }
 
@@ -138,15 +138,39 @@ namespace Game
         }
     };
 
+    class ChaseTarget : public BehaviourTree::LeafNode
+    {
+        Raven_Bot* _bot;
+        Raven_Bot* _target;
+
+    public:
+        ChaseTarget(Raven_Bot* bot, Raven_Bot* target)
+            : _bot{bot}, _target{target}
+        {
+        }
+
+        BehaviourTree::NodeState tick(BehaviourTree::BlackBoard& bb) override
+        {
+            _bot->GetSteering()->ArriveOn();
+            _bot->GetSteering()->SetTarget(_target->Pos());
+
+            _bot->UpdateMovement();
+            _bot->RotateFacingTowardPosition(_bot->Pos() + _bot->Heading());
+            return BehaviourTree::NodeState::RUNNING;
+        }
+    };
+
     class IsTargetInRange : public BehaviourTree::LeafNode
     {
         Raven_Bot* _bot;
         Raven_Bot* _target;
         float _range;
+
     public:
         IsTargetInRange(Raven_Bot* bot, Raven_Bot* target, float range)
-            : _bot{ bot }, _target{ target }, _range{ range }
-        {}
+            : _bot{bot}, _target{target}, _range{range}
+        {
+        }
 
         BehaviourTree::NodeState tick(BehaviourTree::BlackBoard& bb) override
         {

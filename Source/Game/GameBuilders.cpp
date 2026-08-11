@@ -117,10 +117,10 @@ namespace Game
         BehaviourTree::Node* patrolRepeater = new BehaviourTree::Repeater(patrolSequence);
         
         // Detect action
-        auto detectPlayer = new IsTargetInRange(bot, player, 200.0f);
+        auto detectPlayer = new IsTargetInRange(bot, player, 150.0f);
 
         // Chase action
-        auto chasePlayer = new MoveBotTo(bot, player->Pos());
+        auto chasePlayer = new ChaseTarget(bot, player);
 
         // IfThenElse Decorator
         auto ifThenElse = new BehaviourTree::IfThenElse(detectPlayer, chasePlayer, patrolRepeater);
