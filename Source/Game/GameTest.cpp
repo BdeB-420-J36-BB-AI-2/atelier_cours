@@ -25,6 +25,7 @@ namespace Game
 
         _bot = _scene->GetAllBots().front();
         _bot->Spawn(Vector2D(margin, margin));
+        _bot->SetMaxSpeed(2.0);
 
         _tree = GameBuilders::TestMoveBotTo(_bot, _scene);
 
