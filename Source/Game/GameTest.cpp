@@ -30,7 +30,7 @@ namespace Game
 
         _player = new PlayerBot(*_scene, Vector2D(mapWidth * 0.5, mapHeight * 0.5));
 
-        _tree = GameBuilders::TestMoveBotTo(_bot, _scene);
+        _tree = GameBuilders::TestTargetDetection(_scene);
 
         _loop = true;
     }
