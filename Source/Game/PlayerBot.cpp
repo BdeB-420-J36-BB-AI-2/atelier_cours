@@ -47,7 +47,7 @@ namespace Game
         _bot->RotateFacingTowardPosition(_bot->Pos() + _bot->Heading());
     }
 
-    void PlayerBot::render() const
+    void PlayerBot::render()
     {
         _bot->Render();
     }

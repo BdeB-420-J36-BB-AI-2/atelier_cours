@@ -13,10 +13,12 @@ namespace BehaviourTree
 
 namespace Game
 {
+    class PlayerBot;
+
     class GameTest : public GameBase
     {
         BehaviourTree::BehaviourTree* _tree;
-        Player _player;
+        PlayerBot* _player;
         Raven_Bot* _bot;
         Raven_Scene* _scene;
 

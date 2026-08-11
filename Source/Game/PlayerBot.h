@@ -12,7 +12,7 @@ namespace Game
         PlayerBot(Raven_Scene& scene, const Vector2D);
         void HandleInput();
         void Update();
-        void render() const;
+        void render();
     private:
         Raven_Bot* _bot;
     };

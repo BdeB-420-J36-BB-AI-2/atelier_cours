@@ -7,18 +7,16 @@
 #include "BehaviourTree/Builders.h"
 
 #include "GameConfig.h"
+#include "PlayerBot.h"
 #include "Raven_Map.h"
 #include "Raven_Scene.h"
 
 namespace Game
 {
-    GameTest::GameTest() :
-        _player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+    GameTest::GameTest()
     {
         InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "GameTest");
         SetTargetFPS(30);
-
-        _player.setHealth(10);
 
         _scene = new Raven_Scene();
         _scene->LoadMap("maps/blank400x400.map");
@@ -26,6 +24,11 @@ namespace Game
         _bot = _scene->GetAllBots().front();
         _bot->Spawn(Vector2D(margin, margin));
         _bot->SetMaxSpeed(2.0);
+
+        const auto mapWidth = _scene->GetMap()->GetSizeX();
+        const auto mapHeight = _scene->GetMap()->GetSizeY();
+
+        _player = new PlayerBot(*_scene, Vector2D(mapWidth * 0.5, mapHeight * 0.5));
 
         _tree = GameBuilders::TestMoveBotTo(_bot, _scene);
 
@@ -36,8 +39,12 @@ namespace Game
     {
         delete _tree;
         _tree = nullptr;
+
         delete _scene;
         _scene = nullptr;
+
+        delete _player;
+        _player = nullptr;
         CloseWindow();
     }
 
@@ -49,7 +56,7 @@ namespace Game
             || IsKeyDown(KEY_UP)
             || IsKeyDown(KEY_SPACE);
 
-        if (directionPressed)
+        /*if (directionPressed)
             _player.setDirection(
                 IsKeyDown(KEY_LEFT),
                 IsKeyDown(KEY_RIGHT),
@@ -57,17 +64,13 @@ namespace Game
                 (IsKeyDown(KEY_UP) || IsKeyDown(KEY_SPACE))
             );
         else
-            _player.resetDirection();
+            _player.resetDirection();*/
     }
 
     void GameTest::handleInput()
     {
-        // Mouse
-        if (IsMouseButtonDown(MOUSE_LEFT_BUTTON))
-            _player.setPosition(GetMouseX(), GetMouseY());
-
         // Direction pressed
-        //HandlePlayerDirection();
+        _player->HandleInput();
 
         _loop = !WindowShouldClose();
     }
@@ -83,7 +86,7 @@ namespace Game
             _gameComplete = true;
 
         // Physics
-        //_player.update();
+        _player->Update();
     }
 
     void GameTest::DrawGameComplete()
@@ -96,7 +99,7 @@ namespace Game
         BeginDrawing();
         {
             ClearBackground(BLANK);
-            //_player.render();
+            _player->render();
             _scene->Render();
             if (_gameComplete)
                 DrawGameComplete();
