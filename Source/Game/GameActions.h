@@ -137,4 +137,22 @@ namespace Game
             return BehaviourTree::NodeState::RUNNING;
         }
     };
+
+    class IsTargetInRange : public BehaviourTree::LeafNode
+    {
+        Raven_Bot* _bot;
+        Raven_Bot* _target;
+        float _range;
+    public:
+        IsTargetInRange(Raven_Bot* bot, Raven_Bot* target, float range)
+            : _bot{ bot }, _target{ target }, _range{ range }
+        {}
+
+        BehaviourTree::NodeState tick(BehaviourTree::BlackBoard& bb) override
+        {
+            const auto inRange = Vec2DDistance(_bot->Pos(), _target->Pos()) <= _range;
+            // Implementation for checking if target is in range
+            return inRange ? BehaviourTree::NodeState::SUCCESS : BehaviourTree::NodeState::FAILURE;
+        }
+    };
 }

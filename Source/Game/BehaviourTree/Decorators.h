@@ -31,6 +31,28 @@ namespace BehaviourTree
             return NodeState::SUCCESS;
         }
     };
+
+    class IfThenElse : public DecoratorNode
+    {
+        Node* _then;
+        Node* _else;
+    public:
+        IfThenElse(Node* ifNode, Node* thenNode, Node* elseNode)
+            : DecoratorNode(ifNode), _then(thenNode), _else(elseNode)
+        {}
+
+        NodeState tick(BlackBoard& bb) override
+        {
+            NodeState state = _child->tick(bb);
+            if (state == NodeState::SUCCESS)
+                return _then->tick(bb);
+            
+            if (state == NodeState::FAILURE)
+                return _else->tick(bb);
+
+            return NodeState::RUNNING;
+        }
+    };
 }
 
 
