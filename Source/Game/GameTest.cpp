@@ -1,5 +1,6 @@
 #include "GameTest.h"
 
+#include <Code_Utilities_Light_v2.h>
 #include <raylib.h>
 
 #include "GameActions.h"
@@ -18,6 +19,7 @@ namespace Game
     {
         InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "GameTest");
         SetTargetFPS(30);
+        BdB::srandInt(static_cast<int>(time(nullptr)));
 
         _scene = new Raven_Scene();
         _scene->LoadMap("maps/blank400x400.map");
@@ -37,15 +39,12 @@ namespace Game
 
         _player = new PlayerBot(*_scene, Vector2D(mapWidth * 0.5, mapHeight * 0.5));
 
-        // patrol sequence
-        std::vector<Vector2D> wayPoints = {
-            Vector2D(margin, margin),
-            Vector2D(mapWidth - margin, margin),
-            Vector2D(mapWidth - margin, mapHeight - margin),
-            Vector2D(margin, mapHeight - margin)
-        };
+        auto nodeCount = _graph->NumNodes();
+        auto startPoint = RandInt(0, nodeCount);
+        auto endPoint = RandInt(0, nodeCount);
 
-        _wayPoints = wayPoints;
+        _wayPoints.push_back(_graph->GetNode(startPoint).Pos());
+        _wayPoints.push_back(_graph->GetNode(endPoint).Pos());
         _tree = GameBuilders::TestTargetDetection(_scene, _wayPoints);
 
         _loop = true;
