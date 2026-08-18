@@ -10,6 +10,7 @@
 #include "PlayerBot.h"
 #include "Raven_Map.h"
 #include "Raven_Scene.h"
+#include "Graph/HandyGraphFunctions.h"
 
 namespace Game
 {
@@ -27,6 +28,12 @@ namespace Game
 
         const auto mapWidth = _scene->GetMap()->GetSizeX();
         const auto mapHeight = _scene->GetMap()->GetSizeY();
+
+        const auto NumCellsX = 10;
+        const auto NumCellsY = 10;
+
+        _graph = new SparseGraph<NavGraphNode<>, NavGraphEdge>(true);
+        GraphHelper_CreateGrid(*_graph, mapWidth, mapHeight, NumCellsX, NumCellsY);
 
         _player = new PlayerBot(*_scene, Vector2D(mapWidth * 0.5, mapHeight * 0.5));
 
@@ -54,6 +61,9 @@ namespace Game
 
         delete _player;
         _player = nullptr;
+
+        delete _graph;
+        _graph = nullptr;
         CloseWindow();
     }
 
@@ -109,6 +119,8 @@ namespace Game
         {
             ClearBackground(BLANK);
 
+            GraphHelper_DrawUsingGDI(*_graph, GraphicsContext::grey);
+
             // Mark the 4 patrol destinations picked in the ctor, numbered
             // in the order the bot visits them.
             gfx.RedPen();
@@ -116,7 +128,7 @@ namespace Game
             for (size_t i = 0; i < _wayPoints.size(); ++i)
             {
                 gfx.Circle(_wayPoints[i], 6);
-                gfx.TextColor(255, 0, 0);
+                gfx.TextColor(GraphicsContext::red);
                 gfx.TextAtPos(_wayPoints[i] + Vector2D(8, -8), std::to_string(i + 1));
             }
 
@@ -125,7 +137,7 @@ namespace Game
             auto target = bb.get<Vector2D>("CurrentTarget", {});
             if (target != Vector2D())
             {
-                gfx.TextColor(0, 255, 0);
+                gfx.TextColor(GraphicsContext::green);
                 gfx.TextAtPos(target + Vector2D(8, -8), "Target");
             }
 
