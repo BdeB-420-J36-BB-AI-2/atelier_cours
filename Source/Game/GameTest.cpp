@@ -42,6 +42,8 @@ namespace Game
         auto nodeCount = _graph->NumNodes();
         auto startPoint = RandInt(0, nodeCount);
         auto endPoint = RandInt(0, nodeCount);
+        _targetPoints.push_back(_graph->GetNode(startPoint).Pos());
+        _targetPoints.push_back(_graph->GetNode(endPoint).Pos());
 
         // Le bot doit être spawné sur le startNode noeud du graph
         auto botStart = _graph->GetNode(startPoint).Pos();
@@ -134,15 +136,20 @@ namespace Game
 
             GraphHelper_DrawUsingGDI(*_graph, GraphicsContext::grey);
 
-            // Mark the 4 patrol destinations picked in the ctor, numbered
-            // in the order the bot visits them.
+            // display path
+            gfx.BluePen();
+            gfx.BlueBrush();
+            for (size_t i = 0; i < _wayPoints.size(); ++i)
+                gfx.Circle(_wayPoints[i], 3);
+
+            // display target
             gfx.RedPen();
             gfx.RedBrush();
-            for (size_t i = 0; i < _wayPoints.size(); ++i)
+            for (size_t i = 0; i < _targetPoints.size(); ++i)
             {
-                gfx.Circle(_wayPoints[i], 6);
+                gfx.Circle(_targetPoints[i], 6);
                 gfx.TextColor(GraphicsContext::red);
-                gfx.TextAtPos(_wayPoints[i] + Vector2D(8, -8), std::to_string(i + 1));
+                gfx.TextAtPos(_targetPoints[i] + Vector2D(8, -8), std::to_string(i + 1));
             }
 
             auto& bb = _tree->getBlackBoard();

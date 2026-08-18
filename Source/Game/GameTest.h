@@ -28,6 +28,7 @@ namespace Game
         PlayerBot* _player;
         Raven_Bot* _bot;
         Raven_Scene* _scene;
+        std::vector<Vector2D> _targetPoints;
         std::vector<Vector2D> _wayPoints;
         NavMeshGraph* _graph;
 
