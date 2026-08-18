@@ -83,7 +83,7 @@ namespace Game
         return bt;
     }
 
-    BehaviourTree::BehaviourTree* GameBuilders::TestTargetDetection(Raven_Scene* scene)
+    BehaviourTree::BehaviourTree* GameBuilders::TestTargetDetection(Raven_Scene* scene, const std::vector<Vector2D>& wayPoints)
     {
         auto bt = new BehaviourTree::BehaviourTree();
         // TODO: implement this function to test target detection behavior
@@ -101,14 +101,6 @@ namespace Game
         // TODO: Il faudrait améliorer cette partie pour gérer plusieurs bots et joueurs.
         Raven_Bot* bot = scene->GetAllBots().front();
         Raven_Bot* player = scene->GetAllBots().back();
-
-        // patrol sequence
-        const std::vector<Vector2D> wayPoints = {
-            Vector2D(GameTest::margin, GameTest::margin),
-            Vector2D(mapWidth - GameTest::margin, GameTest::margin),
-            Vector2D(mapWidth - GameTest::margin, mapHeight - GameTest::margin),
-            Vector2D(GameTest::margin, mapHeight - GameTest::margin)
-        };
 
         auto patrolSequence = new BehaviourTree::Sequence();
         for (auto way_point : wayPoints)

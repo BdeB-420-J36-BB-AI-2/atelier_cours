@@ -1,6 +1,8 @@
 #pragma once
 
-#include "Player.h"
+#include <vector>
+
+#include "Vector2D.h"
 #include "../Core/GameBase.h"
 
 class Raven_Scene;
@@ -15,12 +17,13 @@ namespace Game
 {
     class PlayerBot;
 
-    class GameTest : public GameBase
+    class GameTest : public Core::GameBase
     {
         BehaviourTree::BehaviourTree* _tree;
         PlayerBot* _player;
         Raven_Bot* _bot;
         Raven_Scene* _scene;
+        std::vector<Vector2D> _wayPoints;
 
         bool _gameComplete = false;
     public:

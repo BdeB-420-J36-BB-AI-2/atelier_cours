@@ -30,7 +30,16 @@ namespace Game
 
         _player = new PlayerBot(*_scene, Vector2D(mapWidth * 0.5, mapHeight * 0.5));
 
-        _tree = GameBuilders::TestTargetDetection(_scene);
+        // patrol sequence
+        std::vector<Vector2D> wayPoints = {
+            Vector2D(margin, margin),
+            Vector2D(mapWidth - margin, margin),
+            Vector2D(mapWidth - margin, mapHeight - margin),
+            Vector2D(margin, mapHeight - margin)
+        };
+
+        _wayPoints = wayPoints;
+        _tree = GameBuilders::TestTargetDetection(_scene, _wayPoints);
 
         _loop = true;
     }
@@ -99,8 +108,30 @@ namespace Game
         BeginDrawing();
         {
             ClearBackground(BLANK);
+
+            // Mark the 4 patrol destinations picked in the ctor, numbered
+            // in the order the bot visits them.
+            gfx.RedPen();
+            gfx.RedBrush();
+            for (size_t i = 0; i < _wayPoints.size(); ++i)
+            {
+                gfx.Circle(_wayPoints[i], 6);
+                gfx.TextColor(255, 0, 0);
+                gfx.TextAtPos(_wayPoints[i] + Vector2D(8, -8), std::to_string(i + 1));
+            }
+
+            auto& bb = _tree->getBlackBoard();
+
+            auto target = bb.get<Vector2D>("CurrentTarget", {});
+            if (target != Vector2D())
+            {
+                gfx.TextColor(0, 255, 0);
+                gfx.TextAtPos(target + Vector2D(8, -8), "Target");
+            }
+
             _player->render();
             _scene->Render();
+
             if (_gameComplete)
                 DrawGameComplete();
             DrawFPS(20, 20);
