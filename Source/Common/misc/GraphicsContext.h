@@ -170,6 +170,15 @@ public:
     return ::GetScreenHeight();
   }
 
+  //--------------------------- raygui widgets
+  //Implemented in GraphicsContext.cpp so raygui.h stays out of this header.
+  //Rect2D (not raylib's Rectangle) keeps raylib/raygui types from leaking to callers.
+  void GuiPanel(Rect2D bounds, const char* text);
+  void GuiLabel(Rect2D bounds, const char* text);
+  bool GuiButton(Rect2D bounds, const char* text);
+  void GuiCheckBox(Rect2D bounds, const char* text, bool* checked);
+  void GuiListView(Rect2D bounds, const char* text, int* scrollIndex, int* active);
+
   //ALWAYS call this once, before drawing anything else in the frame.
   //Wraps raylib's BeginDrawing().
   void StartDrawing()

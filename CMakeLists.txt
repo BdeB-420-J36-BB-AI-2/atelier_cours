@@ -42,6 +42,10 @@ target_include_directories(${PROJECT_NAME} PUBLIC "${EXTERNAL_ROOT_DIR}/raylib/i
 target_include_directories(${PROJECT_NAME} PUBLIC "${EXTERNAL_ROOT_DIR}/raygui")
 target_include_directories(${PROJECT_NAME} PUBLIC "${EXTERNAL_ROOT_DIR}")
 
+# raygui's single-translation-unit implementation lives alongside the header in
+# External/raygui (compiled as C — see the comment in raygui_impl.c for why).
+target_sources(${PROJECT_NAME} PRIVATE "${EXTERNAL_ROOT_DIR}/raygui/raygui_impl.c")
+
 # Raven (Buckland Chapter 7-10) sources live as siblings under Source/ so its many
 # "..\Common\..." style relative includes keep resolving the same way they did in
 # the original project layout.
