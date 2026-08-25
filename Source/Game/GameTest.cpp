@@ -25,7 +25,7 @@ namespace Game
         _scene->LoadMap("maps/blank400x400.map");
 
         _bot = _scene->GetAllBots().front();
-        _bot->SetMaxSpeed(2.0);
+        _bot->SetMaxSpeed(1.0);
 
         const auto mapWidth = _scene->GetMap()->GetSizeX();
         const auto mapHeight = _scene->GetMap()->GetSizeY();
@@ -61,16 +61,13 @@ namespace Game
         for (const auto node : pathNodesReturn)
             _wayPoints.push_back(_graph->GetNode(node).Pos());
 
-        _tree = GameBuilders::TestTargetDetection(_scene, _wayPoints);
+        _bot->SetBrain(GameBuilders::TestTargetDetection(_scene, _wayPoints));
 
         _loop = true;
     }
 
     GameTest::~GameTest()
     {
-        delete _tree;
-        _tree = nullptr;
-
         delete _scene;
         _scene = nullptr;
 
@@ -114,9 +111,9 @@ namespace Game
         if (_gameComplete)
             return;
 
-        if (!_tree->isComplete())
-            _tree->tick();
-        else
+        _scene->Update();
+
+        if (_bot->GetBrain()->isComplete())
             _gameComplete = true;
 
         // Physics
@@ -152,7 +149,7 @@ namespace Game
                 gfx.TextAtPos(_targetPoints[i] + Vector2D(8, -8), std::to_string(i + 1));
             }
 
-            auto& bb = _tree->getBlackBoard();
+            auto& bb = _bot->GetBrain()->getBlackBoard();
 
             auto target = bb.get<Vector2D>("CurrentTarget", {});
             if (target != Vector2D())

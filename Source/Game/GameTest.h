@@ -32,7 +32,6 @@ namespace Game
 
     class GameTest : public Core::GameBase
     {
-        BehaviourTree::BehaviourTree* _tree;
         PlayerBot* _player;
         Raven::Raven_Bot* _bot;
         Raven::Raven_Scene* _scene;

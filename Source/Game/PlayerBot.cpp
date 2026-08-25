@@ -16,6 +16,7 @@ namespace Game
         _bot = scene.GetAllBots().back();
         _bot->Spawn(startPos);
         _bot->SetMaxSpeed(4.0);
+        _bot->TakePossession();
     }
 
     void PlayerBot::HandleInput()
