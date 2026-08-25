@@ -34,8 +34,20 @@ set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT R
 # Add sources (sets SOURCE_HEADERS_CLIENT and SOURCE_CPPS_CLIENT in this scope)
 add_subdirectory(Source)
 
-# Replicate the Source folder hierarchy as VS solution filters
+# Common and Raven now live in External/, so they need their own glob -
+# Source/CMakeLists.txt only covers Source/.
+file(GLOB_RECURSE COMMON_HEADERS CONFIGURE_DEPENDS "${EXTERNAL_ROOT_DIR}/Common/*.h")
+file(GLOB_RECURSE COMMON_CPPS    CONFIGURE_DEPENDS "${EXTERNAL_ROOT_DIR}/Common/*.cpp")
+file(GLOB_RECURSE RAVEN_HEADERS  CONFIGURE_DEPENDS "${EXTERNAL_ROOT_DIR}/Raven/*.h")
+file(GLOB_RECURSE RAVEN_CPPS     CONFIGURE_DEPENDS "${EXTERNAL_ROOT_DIR}/Raven/*.cpp")
+target_sources(${PROJECT_NAME} PRIVATE ${COMMON_HEADERS} ${COMMON_CPPS} ${RAVEN_HEADERS} ${RAVEN_CPPS})
+
+# Replicate the Source/Common/Raven folder hierarchies as VS solution filters.
+# Common and Raven live under External/ on disk, so they're nested under an
+# "External" filter too, alongside raylib/raygui below.
 source_group(TREE "${PROJECT_ROOT_DIR}/Source" PREFIX "Source" FILES ${SOURCE_HEADERS_CLIENT} ${SOURCE_CPPS_CLIENT})
+source_group(TREE "${EXTERNAL_ROOT_DIR}/Common" PREFIX "External/Common" FILES ${COMMON_HEADERS} ${COMMON_CPPS})
+source_group(TREE "${EXTERNAL_ROOT_DIR}/Raven" PREFIX "External/Raven" FILES ${RAVEN_HEADERS} ${RAVEN_CPPS})
 
 # Add libraries HEADER
 target_include_directories(${PROJECT_NAME} PUBLIC "${EXTERNAL_ROOT_DIR}/raylib/include")
@@ -46,24 +58,38 @@ target_include_directories(${PROJECT_NAME} PUBLIC "${EXTERNAL_ROOT_DIR}")
 # External/raygui (compiled as C — see the comment in raygui_impl.c for why).
 target_sources(${PROJECT_NAME} PRIVATE "${EXTERNAL_ROOT_DIR}/raygui/raygui_impl.c")
 
-# Raven (Buckland Chapter 7-10) sources live as siblings under Source/ so its many
-# "..\Common\..." style relative includes keep resolving the same way they did in
-# the original project layout.
+# raylib/raygui: add their top-level files (headers + the .c modules raylib's
+# own build compiles into the prebuilt raylib.lib we link against below) so
+# they're browsable in the Visual Studio solution. The .c files are marked
+# HEADER_FILE_ONLY so VS shows them without compiling/linking them a second
+# time (that would duplicate symbols already in raylib.lib). raygui.h gets the
+# same treatment for consistency; raygui_impl.c above is a real, compiled
+# source and is left alone.
+file(GLOB RAYLIB_LIB_FILES "${EXTERNAL_ROOT_DIR}/raylib/include/*.h" "${EXTERNAL_ROOT_DIR}/raylib/include/*.c")
+file(GLOB RAYGUI_LIB_HEADERS "${EXTERNAL_ROOT_DIR}/raygui/*.h")
+set(RAYLIB_LIB_CPPS ${RAYLIB_LIB_FILES})
+list(FILTER RAYLIB_LIB_CPPS INCLUDE REGEX "\\.c$")
+set_source_files_properties(${RAYLIB_LIB_CPPS} PROPERTIES HEADER_FILE_ONLY TRUE)
+target_sources(${PROJECT_NAME} PRIVATE ${RAYLIB_LIB_FILES} ${RAYGUI_LIB_HEADERS})
+source_group(TREE "${EXTERNAL_ROOT_DIR}/raylib/include" PREFIX "External/raylib" FILES ${RAYLIB_LIB_FILES})
+source_group("External/raygui" FILES ${RAYGUI_LIB_HEADERS} "${EXTERNAL_ROOT_DIR}/raygui/raygui_impl.c")
+
+# Raven and Common now live in External/ (as a shared submodule dependency) so
+# their many "#include \"2D/Vector2D.h\""-style includes keep resolving via
+# these dirs. Common's own subfolders (2D, Game, Graph, misc, fuzzy) don't need
+# their own entries: every cross-folder include is already written with that
+# prefix (resolved via the "External/Common" entry below), and same-folder
+# includes resolve via the includer's own directory regardless of -I flags.
 target_include_directories(${PROJECT_NAME} PUBLIC
-    "${PROJECT_ROOT_DIR}/Source/Raven"
-    "${PROJECT_ROOT_DIR}/Source/Common"
-    "${PROJECT_ROOT_DIR}/Source/Common/2D"
-    "${PROJECT_ROOT_DIR}/Source/Common/Game"
-    "${PROJECT_ROOT_DIR}/Source/Common/Graph"
-    "${PROJECT_ROOT_DIR}/Source/Common/misc"
-    "${PROJECT_ROOT_DIR}/Source/Common/Debug"
-    "${PROJECT_ROOT_DIR}/Source/Common/fuzzy")
+    "${EXTERNAL_ROOT_DIR}/Raven"
+    "${EXTERNAL_ROOT_DIR}/Common"
+    "${PROJECT_ROOT_DIR}/Source/Game")
 
 # Raven loads maps/*.map with paths relative to the process's working directory,
 # so copy them next to the built exe.
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${PROJECT_ROOT_DIR}/Source/Raven/maps" "$<TARGET_FILE_DIR:${PROJECT_NAME}>/maps"
+        "${EXTERNAL_ROOT_DIR}/Raven/maps" "$<TARGET_FILE_DIR:${PROJECT_NAME}>/maps"
     COMMENT "Copying Raven maps/ next to the built exe")
 
 # Determine architecture folder (x64 / Win32) like the MSBuild $(Platform) macro
