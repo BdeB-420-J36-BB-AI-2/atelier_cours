@@ -40,8 +40,8 @@ namespace Game
 
         // on recupére 2 noeuds aléatoires du graph
         auto nodeCount = _graph->NumNodes();
-        auto startPoint = RandInt(0, nodeCount);
-        auto endPoint = RandInt(0, nodeCount);
+        auto startPoint = BdB::randInt(0, nodeCount);
+        auto endPoint = BdB::randInt(0, nodeCount);
         _targetPoints.push_back(_graph->GetNode(startPoint).Pos());
         _targetPoints.push_back(_graph->GetNode(endPoint).Pos());
 
