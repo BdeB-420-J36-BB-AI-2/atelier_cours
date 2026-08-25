@@ -2,14 +2,22 @@
 
 #include <vector>
 
-#include "GraphNodeTypes.h"
-#include "SparseGraph.h"
-#include "Vector2D.h"
+#include "Common/Graph/GraphNodeTypes.h"
+#include "Common/Graph/SparseGraph.h"
+#include "Common/2D/Vector2D.h"
 #include "../Core/GameBase.h"
+using namespace Common;
 
-class NavGraphEdge;
-class Raven_Scene;
-class Raven_Bot;
+namespace Common
+{
+    class NavGraphEdge;
+}
+
+namespace Raven
+{
+    class Raven_Scene;
+    class Raven_Bot;
+}
 
 namespace BehaviourTree
 {
@@ -26,8 +34,8 @@ namespace Game
     {
         BehaviourTree::BehaviourTree* _tree;
         PlayerBot* _player;
-        Raven_Bot* _bot;
-        Raven_Scene* _scene;
+        Raven::Raven_Bot* _bot;
+        Raven::Raven_Scene* _scene;
         std::vector<Vector2D> _targetPoints;
         std::vector<Vector2D> _wayPoints;
         NavMeshGraph* _graph;

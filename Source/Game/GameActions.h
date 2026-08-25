@@ -2,9 +2,9 @@
 #include <raylib.h>
 
 #include "Player.h"
-#include "Raven_Bot.h"
+#include "Raven/Raven_Bot.h"
 #include "Raven_SteeringBehaviors.h"
-#include "Vector2D.h"
+#include "Common/2D/Vector2D.h"
 #include "../Core/Actor.h"
 #include "../Core/Globals.h"
 #include "BehaviourTree/Core/BlackBoard.h"
@@ -12,6 +12,8 @@
 #include "BehaviourTree/Core/Node.h"
 
 using namespace Core;
+using namespace Common;
+using namespace Raven;
 
 namespace Game
 {

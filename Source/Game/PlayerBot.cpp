@@ -5,6 +5,8 @@
 #include "Raven_Scene.h"
 #include "Raven_SteeringBehaviors.h"
 
+using namespace Raven;
+
 namespace Game
 {
     PlayerBot::PlayerBot(Raven_Scene& scene, const Vector2D startPos)

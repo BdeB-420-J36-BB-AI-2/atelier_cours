@@ -2,7 +2,7 @@
 
 namespace BehaviourTree
 {
-    class blackBoard;
+    class BlackBoard;
 
     enum class NodeState
     {

@@ -6,12 +6,14 @@
 #include "GameTest.h"
 #include "Player.h"
 #include "Raven_Map.h"
-#include "Raven_Scene.h"
+#include "Raven/Raven_Scene.h"
 #include "BehaviourTree/ActionLeaves.h"
 #include "BehaviourTree/Composites.h"
 #include "BehaviourTree/Decorators.h"
 #include "BehaviourTree/DummyLeaves.h"
 #include "BehaviourTree/Core/BehaviourTree.h"
+
+using namespace Raven;
 
 namespace Game
 {

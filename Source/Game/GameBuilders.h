@@ -1,9 +1,17 @@
 #pragma once
 #include <vector>
 
-struct Vector2D;
-class Raven_Bot;
-class Raven_Scene;
+namespace Common
+{
+    struct Vector2D;
+}
+
+namespace Raven
+{
+    class Raven_Bot;
+    class Raven_Scene;
+}
+
 
 namespace BehaviourTree
 {
@@ -19,7 +27,7 @@ namespace Game
     public:
         static BehaviourTree::BehaviourTree* TestMovePlayer(Player* player);
         static BehaviourTree::BehaviourTree* TestMovePlayerToLimit(Player* player);
-        static BehaviourTree::BehaviourTree* TestMoveBotTo(Raven_Bot* bot, Raven_Scene* scene);
-        static BehaviourTree::BehaviourTree* TestTargetDetection(Raven_Scene* scene, const std::vector<Vector2D>& wayPoints);
+        static BehaviourTree::BehaviourTree* TestMoveBotTo(Raven::Raven_Bot* bot, Raven::Raven_Scene* scene);
+        static BehaviourTree::BehaviourTree* TestTargetDetection(Raven::Raven_Scene* scene, const std::vector<Common::Vector2D>& wayPoints);
     };
 }
