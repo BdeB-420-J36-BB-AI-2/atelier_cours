@@ -46,7 +46,6 @@ namespace Game
 
     void PlayerBot::Update()
     {
-        _bot->UpdateMovement();
         _bot->RotateFacingTowardPosition(_bot->Pos() + _bot->Heading());
     }
 
