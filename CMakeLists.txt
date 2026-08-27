@@ -34,20 +34,23 @@ set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT R
 # Add sources (sets SOURCE_HEADERS_CLIENT and SOURCE_CPPS_CLIENT in this scope)
 add_subdirectory(Source)
 
-# Common and Raven now live in External/, so they need their own glob -
-# Source/CMakeLists.txt only covers Source/.
-file(GLOB_RECURSE COMMON_HEADERS CONFIGURE_DEPENDS "${EXTERNAL_ROOT_DIR}/Common/*.h")
-file(GLOB_RECURSE COMMON_CPPS    CONFIGURE_DEPENDS "${EXTERNAL_ROOT_DIR}/Common/*.cpp")
-file(GLOB_RECURSE RAVEN_HEADERS  CONFIGURE_DEPENDS "${EXTERNAL_ROOT_DIR}/Raven/*.h")
-file(GLOB_RECURSE RAVEN_CPPS     CONFIGURE_DEPENDS "${EXTERNAL_ROOT_DIR}/Raven/*.cpp")
-target_sources(${PROJECT_NAME} PRIVATE ${COMMON_HEADERS} ${COMMON_CPPS} ${RAVEN_HEADERS} ${RAVEN_CPPS})
+# Common, Raven and Graphics now live in External/, so they need their own
+# glob - Source/CMakeLists.txt only covers Source/.
+file(GLOB_RECURSE COMMON_HEADERS   CONFIGURE_DEPENDS "${EXTERNAL_ROOT_DIR}/Common/*.h")
+file(GLOB_RECURSE COMMON_CPPS      CONFIGURE_DEPENDS "${EXTERNAL_ROOT_DIR}/Common/*.cpp")
+file(GLOB_RECURSE RAVEN_HEADERS    CONFIGURE_DEPENDS "${EXTERNAL_ROOT_DIR}/Raven/*.h")
+file(GLOB_RECURSE RAVEN_CPPS       CONFIGURE_DEPENDS "${EXTERNAL_ROOT_DIR}/Raven/*.cpp")
+file(GLOB_RECURSE GRAPHICS_HEADERS CONFIGURE_DEPENDS "${EXTERNAL_ROOT_DIR}/Graphics/*.h")
+file(GLOB_RECURSE GRAPHICS_CPPS    CONFIGURE_DEPENDS "${EXTERNAL_ROOT_DIR}/Graphics/*.cpp")
+target_sources(${PROJECT_NAME} PRIVATE ${COMMON_HEADERS} ${COMMON_CPPS} ${RAVEN_HEADERS} ${RAVEN_CPPS} ${GRAPHICS_HEADERS} ${GRAPHICS_CPPS})
 
-# Replicate the Source/Common/Raven folder hierarchies as VS solution filters.
-# Common and Raven live under External/ on disk, so they're nested under an
+# Replicate the Source/Common/Raven/Graphics folder hierarchies as VS solution
+# filters. They live under External/ on disk, so they're nested under an
 # "External" filter too, alongside raylib/raygui below.
 source_group(TREE "${PROJECT_ROOT_DIR}/Source" PREFIX "Source" FILES ${SOURCE_HEADERS_CLIENT} ${SOURCE_CPPS_CLIENT})
 source_group(TREE "${EXTERNAL_ROOT_DIR}/Common" PREFIX "External/Common" FILES ${COMMON_HEADERS} ${COMMON_CPPS})
 source_group(TREE "${EXTERNAL_ROOT_DIR}/Raven" PREFIX "External/Raven" FILES ${RAVEN_HEADERS} ${RAVEN_CPPS})
+source_group(TREE "${EXTERNAL_ROOT_DIR}/Graphics" PREFIX "External/Graphics" FILES ${GRAPHICS_HEADERS} ${GRAPHICS_CPPS})
 
 # Add libraries HEADER
 target_include_directories(${PROJECT_NAME} PUBLIC "${EXTERNAL_ROOT_DIR}/raylib/include")
@@ -74,15 +77,31 @@ target_sources(${PROJECT_NAME} PRIVATE ${RAYLIB_LIB_FILES} ${RAYGUI_LIB_HEADERS}
 source_group(TREE "${EXTERNAL_ROOT_DIR}/raylib/include" PREFIX "External/raylib" FILES ${RAYLIB_LIB_FILES})
 source_group("External/raygui" FILES ${RAYGUI_LIB_HEADERS} "${EXTERNAL_ROOT_DIR}/raygui/raygui_impl.c")
 
-# Raven and Common now live in External/ (as a shared submodule dependency) so
-# their many "#include \"2D/Vector2D.h\""-style includes keep resolving via
-# these dirs. Common's own subfolders (2D, Game, Graph, misc, fuzzy) don't need
-# their own entries: every cross-folder include is already written with that
-# prefix (resolved via the "External/Common" entry below), and same-folder
-# includes resolve via the includer's own directory regardless of -I flags.
+# glm (header-only, currently unused by any code here) - add it so it's
+# browsable in the Visual Studio solution and resolvable via #include
+# "glm/glm.hpp" or <glm/glm.hpp> (already works thanks to the bare
+# "${EXTERNAL_ROOT_DIR}" entry above, glm's own headers use that same
+# "glm/..." prefix internally). detail/glm.cpp is only needed for glm's
+# opt-in explicit-instantiation build, not for normal header-only use, so
+# it's marked HEADER_FILE_ONLY like raylib's .c files above.
+file(GLOB_RECURSE GLM_HEADERS CONFIGURE_DEPENDS "${EXTERNAL_ROOT_DIR}/glm/*.h" "${EXTERNAL_ROOT_DIR}/glm/*.hpp" "${EXTERNAL_ROOT_DIR}/glm/*.inl")
+file(GLOB_RECURSE GLM_CPPS    CONFIGURE_DEPENDS "${EXTERNAL_ROOT_DIR}/glm/*.cpp")
+set_source_files_properties(${GLM_CPPS} PROPERTIES HEADER_FILE_ONLY TRUE)
+target_sources(${PROJECT_NAME} PRIVATE ${GLM_HEADERS} ${GLM_CPPS})
+source_group(TREE "${EXTERNAL_ROOT_DIR}/glm" PREFIX "External/glm" FILES ${GLM_HEADERS} ${GLM_CPPS})
+
+# Raven, Common and Graphics now live in External/ (as a shared submodule
+# dependency) so their many "#include \"2D/Vector2D.h\""-style includes keep
+# resolving via these dirs. 2D/ moved from Common/ into Graphics/, so it now
+# needs its own entry. Common's remaining subfolders (Game, Graph, misc,
+# fuzzy) don't need their own entries: every cross-folder include is already
+# written with that prefix (resolved via the "External/Common" entry below),
+# and same-folder includes resolve via the includer's own directory
+# regardless of -I flags.
 target_include_directories(${PROJECT_NAME} PUBLIC
     "${EXTERNAL_ROOT_DIR}/Raven"
     "${EXTERNAL_ROOT_DIR}/Common"
+    "${EXTERNAL_ROOT_DIR}/Graphics"
     "${PROJECT_ROOT_DIR}/Source/Game")
 
 # Raven loads maps/*.map with paths relative to the process's working directory,

@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 
-namespace Common
+namespace Graphics
 {
     struct Vector2D;
 }
@@ -28,6 +28,6 @@ namespace Game
         static BehaviourTree::BehaviourTree* TestMovePlayer(Player* player);
         static BehaviourTree::BehaviourTree* TestMovePlayerToLimit(Player* player);
         static BehaviourTree::BehaviourTree* TestMoveBotTo(Raven::Raven_Bot* bot, Raven::Raven_Scene* scene);
-        static BehaviourTree::BehaviourTree* TestTargetDetection(Raven::Raven_Scene* scene, const std::vector<Common::Vector2D>& wayPoints);
+        static BehaviourTree::BehaviourTree* TestTargetDetection(Raven::Raven_Scene* scene, const std::vector<Graphics::Vector2D>& wayPoints);
     };
 }

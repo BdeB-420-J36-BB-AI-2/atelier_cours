@@ -1,7 +1,8 @@
 #pragma once
-#include "Common/2D/Vector2D.h"
+#include "Graphics/2D/Vector2D.h"
 
 using namespace Common;
+using namespace Graphics;
 
 namespace Raven
 {

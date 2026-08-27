@@ -13,6 +13,8 @@
 #include "Raven_Scene.h"
 #include "Graph/HandyGraphFunctions.h"
 
+using namespace Graphics;
+
 namespace Game
 {
     GameTest::GameTest()

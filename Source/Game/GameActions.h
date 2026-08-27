@@ -4,7 +4,7 @@
 #include "Player.h"
 #include "Raven/Raven_Bot.h"
 #include "Raven_SteeringBehaviors.h"
-#include "Common/2D/Vector2D.h"
+#include "Graphics/2D/Vector2D.h"
 #include "../Core/Actor.h"
 #include "../Core/Globals.h"
 #include "BehaviourTree/Core/BlackBoard.h"
@@ -13,6 +13,7 @@
 
 using namespace Core;
 using namespace Common;
+using namespace Graphics;
 using namespace Raven;
 
 namespace Game
