@@ -26,9 +26,6 @@ namespace Game
         _scene = new Raven_Scene();
         _scene->LoadMap("maps/blank400x400.map");
 
-        _bot = _scene->GetAllBots().front();
-        _bot->SetMaxSpeed(1.0);
-
         const auto mapWidth = _scene->GetMap()->GetSizeX();
         const auto mapHeight = _scene->GetMap()->GetSizeY();
 
@@ -40,30 +37,37 @@ namespace Game
 
         _player = new PlayerBot(_scene, Vector2D(mapWidth * 0.5, mapHeight * 0.5));
 
-        // on recupére 2 noeuds aléatoires du graph
-        auto nodeCount = _graph->NumNodes();
-        auto startPoint = BdB::randInt(0, nodeCount);
-        auto endPoint = BdB::randInt(0, nodeCount);
-        _targetPoints.push_back(_graph->GetNode(startPoint).Pos());
-        _targetPoints.push_back(_graph->GetNode(endPoint).Pos());
+        for (auto bot : _scene->GetAllBots())
+        {
+            bot->SetMaxSpeed(1.0);
+            // on recupére 2 noeuds aléatoires du graph
+            auto nodeCount = _graph->NumNodes();
+            auto startPoint = BdB::randInt(0, nodeCount);
+            auto endPoint = BdB::randInt(0, nodeCount);
+            _targetPoints.push_back(_graph->GetNode(startPoint).Pos());
+            _targetPoints.push_back(_graph->GetNode(endPoint).Pos());
 
-        // Le bot doit être spawné sur le startNode noeud du graph
-        auto botStart = _graph->GetNode(startPoint).Pos();
-        _bot->Spawn(botStart);
+            // Le bot doit être spawné sur le startNode noeud du graph
+            auto botStart = _graph->GetNode(startPoint).Pos();
+            bot->Spawn(botStart);
 
-        // on calcule le chemin entre les 2 noeuds du graph (start -> end)
-        Graph_SearchAStar<NavMeshGraph, Heuristic_Euclid> pathSearchStart(*_graph, startPoint, endPoint);
-        auto pathNodes = pathSearchStart.GetPathToTarget();
-        for (const auto node : pathNodes)
-            _wayPoints.push_back(_graph->GetNode(node).Pos());
+            std::vector<Vector2D> wayPoints;
+            // on calcule le chemin entre les 2 noeuds du graph (start -> end)
+            Graph_SearchAStar<NavMeshGraph, Heuristic_Euclid> pathSearchStart(*_graph, startPoint, endPoint);
+            auto pathNodes = pathSearchStart.GetPathToTarget();
+            for (const auto node : pathNodes)
+                wayPoints.push_back(_graph->GetNode(node).Pos());
 
-        // on calcule le chemin entre les 2 noeuds du graph (start -> end)
-        Graph_SearchAStar<NavMeshGraph, Heuristic_Euclid> pathReturnSearch(*_graph, endPoint, startPoint);
-        auto pathNodesReturn = pathReturnSearch.GetPathToTarget();
-        for (const auto node : pathNodesReturn)
-            _wayPoints.push_back(_graph->GetNode(node).Pos());
+            // on calcule le chemin entre les 2 noeuds du graph (start -> end)
+            Graph_SearchAStar<NavMeshGraph, Heuristic_Euclid> pathReturnSearch(*_graph, endPoint, startPoint);
+            auto pathNodesReturn = pathReturnSearch.GetPathToTarget();
+            for (const auto node : pathNodesReturn)
+                wayPoints.push_back(_graph->GetNode(node).Pos());
 
-        _bot->SetBrain(GameBuilders::TestTargetDetection(_scene, _wayPoints));
+            bot->SetBrain(GameBuilders::TestTargetDetection(_player->getBot(), bot, wayPoints));
+        }
+
+        _player->getBot()->SetMaxSpeed(4.0);
 
         _loop = true;
     }
@@ -93,8 +97,14 @@ namespace Game
 
         _scene->Update();
 
-        if (_bot->GetBrain()->isComplete())
-            _gameComplete = true;
+        for (auto bot : _scene->GetAllBots())
+        {
+            if (bot->GetBrain()->isComplete())
+            {
+                _gameComplete = true;
+                break;
+            }
+        }
     }
 
     void GameTest::DrawGameComplete()
@@ -111,10 +121,10 @@ namespace Game
             GraphHelper_DrawUsingGDI(*_graph, GraphicsContext::grey);
 
             // display path
-            gfx.BluePen();
+            /*gfx.BluePen();
             gfx.BlueBrush();
             for (size_t i = 0; i < _wayPoints.size(); ++i)
-                gfx.Circle(_wayPoints[i], 3);
+                gfx.Circle(_wayPoints[i], 3);*/
 
             // display target
             gfx.RedPen();
@@ -126,13 +136,20 @@ namespace Game
                 gfx.TextAtPos(_targetPoints[i] + Vector2D(8, -8), std::to_string(i + 1));
             }
 
-            auto& bb = _bot->GetBrain()->getBlackBoard();
 
-            auto target = bb.get<Vector2D>("CurrentTarget", {});
-            if (target != Vector2D())
+            gfx.BluePen();
+            gfx.BlueBrush();
+            for (auto bot : _scene->GetAllBots())
             {
-                gfx.TextColor(GraphicsContext::green);
-                gfx.TextAtPos(target + Vector2D(8, -8), "Target");
+                auto& bb = bot->GetBrain()->getBlackBoard();
+
+                auto target = bb.get<Vector2D>("CurrentTarget", {});
+                if (target != Vector2D())
+                {
+                    gfx.Circle(target, 3);
+                    gfx.TextColor(GraphicsContext::blue);
+                    gfx.TextAtPos(target + Vector2D(8, -8), "Target");
+                }
             }
 
             _player->render();

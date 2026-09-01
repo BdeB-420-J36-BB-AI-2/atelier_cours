@@ -12,7 +12,6 @@ namespace Game
         // Hack!! Work around to handle player bot inside Raven_scene
         _bot = scene->GetAllBots().back();
         _bot->Spawn(startPos);
-        _bot->SetMaxSpeed(4.0);
         _bot->TakePossession();
         scene->SelectBot(_bot);
     }

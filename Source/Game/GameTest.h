@@ -34,10 +34,8 @@ namespace Game
     class GameTest : public Core::GameBase
     {
         PlayerBot* _player;
-        Raven::Raven_Bot* _bot;
         Raven::Raven_Scene* _scene;
         std::vector<Vector2D> _targetPoints;
-        std::vector<Vector2D> _wayPoints;
         NavMeshGraph* _graph;
 
         bool _gameComplete = false;

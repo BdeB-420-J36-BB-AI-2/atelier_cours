@@ -85,7 +85,7 @@ namespace Game
         return bt;
     }
 
-    BehaviourTree::BehaviourTree* GameBuilders::TestTargetDetection(Raven_Scene* scene, const std::vector<Vector2D>& wayPoints)
+    BehaviourTree::BehaviourTree* GameBuilders::TestTargetDetection(Raven_Bot* player, Raven_Bot* bot, const std::vector<Vector2D>& wayPoints)
     {
         auto bt = new BehaviourTree::BehaviourTree();
         // TODO: implement this function to test target detection behavior
@@ -95,14 +95,6 @@ namespace Game
         //     2. then: MoveBotTo Target
         // 3. else
         //      MoveBotTo Waypoint (patrol Sequence)
-
-        const auto mapWidth = scene->GetMap()->GetSizeX();
-        const auto mapHeight = scene->GetMap()->GetSizeY();
-
-        // On assume que le premier bot est le AI agent et le second bot est le joueur. 
-        // TODO: Il faudrait améliorer cette partie pour gérer plusieurs bots et joueurs.
-        Raven_Bot* bot = scene->GetAllBots().front();
-        Raven_Bot* player = scene->GetAllBots().back();
 
         auto patrolSequence = new BehaviourTree::Sequence();
         for (auto way_point : wayPoints)

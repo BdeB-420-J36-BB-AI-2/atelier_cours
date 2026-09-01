@@ -16,6 +16,7 @@ namespace Game
     {
     public:
         PlayerBot(Raven::Raven_Scene* bot, const Vector2D& startPos);
+        Raven::Raven_Bot* getBot() const { return _bot; }
         void render();
     private:
         Raven::Raven_Bot* _bot;
