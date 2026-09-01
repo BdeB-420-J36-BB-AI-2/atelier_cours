@@ -104,12 +104,13 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     "${EXTERNAL_ROOT_DIR}/Graphics"
     "${PROJECT_ROOT_DIR}/Source/Game")
 
-# Raven loads maps/*.map with paths relative to the process's working directory,
-# so copy them next to the built exe.
+# Maps are owned by the client (Source/Game/maps), not the Raven library.
+# Raven loads maps/*.map with paths relative to the process's working
+# directory, so copy them next to the built exe.
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${EXTERNAL_ROOT_DIR}/Raven/maps" "$<TARGET_FILE_DIR:${PROJECT_NAME}>/maps"
-    COMMENT "Copying Raven maps/ next to the built exe")
+        "${PROJECT_ROOT_DIR}/Source/Game/maps" "$<TARGET_FILE_DIR:${PROJECT_NAME}>/maps"
+    COMMENT "Copying Game maps/ next to the built exe")
 
 # Determine architecture folder (x64 / Win32) like the MSBuild $(Platform) macro
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
