@@ -11,10 +11,13 @@ vcxproj properties setup check list
 #include <Code_Utilities_Light_v2.h>
 
 #include "Game/GameTest.h"
+#include "Game/GameConfig.h"
+
 using namespace BdB;
 
 int main()
 {
+	ApplyRavenConfig();
     Game::GameTest{}.run();
     // TODO: breakdown
     // - ETQ developpeur, je veux pouvoir créer un arbre de comportement pour mon jeu
