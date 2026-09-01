@@ -45,7 +45,6 @@ namespace Game
         static constexpr auto margin = 50;
         GameTest();
         ~GameTest() override;
-        void HandlePlayerDirection();
 
         void handleInput() override;
         void update() override;
