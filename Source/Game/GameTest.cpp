@@ -24,16 +24,12 @@ namespace Game
         BdB::srandInt(static_cast<int>(time(nullptr)));
 
         _scene = new Raven_Scene();
-        _scene->LoadMap("maps/blank400x400.map");
+        _scene->LoadMap("maps/clearDM1.map");
 
         const auto mapWidth = _scene->GetMap()->GetSizeX();
         const auto mapHeight = _scene->GetMap()->GetSizeY();
 
-        const auto NumCellsX = 10;
-        const auto NumCellsY = 10;
-
-        _graph = new SparseGraph<NavGraphNode<>, NavGraphEdge>(true);
-        GraphHelper_CreateGrid(*_graph, mapWidth, mapHeight, NumCellsX, NumCellsY);
+        _graph = &_scene->GetMap()->GetNavGraph();
 
         _player = new PlayerBot(_scene, Vector2D(mapWidth * 0.5, mapHeight * 0.5));
 

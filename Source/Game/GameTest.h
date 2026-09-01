@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "Raven_Map.h"
 #include "Common/Graph/GraphNodeTypes.h"
 #include "Common/Graph/SparseGraph.h"
 #include "Graphics/2D/Vector2D.h"
@@ -29,14 +30,12 @@ namespace Game
 {
     class PlayerBot;
 
-    using NavMeshGraph = SparseGraph<NavGraphNode<>, NavGraphEdge>;
-
     class GameTest : public Core::GameBase
     {
         PlayerBot* _player;
         Raven::Raven_Scene* _scene;
         std::vector<Vector2D> _targetPoints; // TODO: to be deleted, just for testing purpose
-        NavMeshGraph* _graph;
+        Raven::Raven_Map::NavGraph* _graph;
 
         bool _gameComplete = false;
     public:
