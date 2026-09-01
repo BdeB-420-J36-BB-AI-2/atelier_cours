@@ -106,7 +106,7 @@ namespace Game
     {
         gfx.StartDrawing();
         {
-            gfx.ClearBackground(GfxBlank);
+            gfx.ClearBackground(GfxWhite);
 
             GraphHelper_DrawUsingGDI(*_graph, GraphicsContext::grey);
 
@@ -121,7 +121,7 @@ namespace Game
             gfx.RedBrush();
             for (size_t i = 0; i < _targetPoints.size(); ++i)
             {
-                gfx.Circle(_targetPoints[i], 6);
+                gfx.Circle(_targetPoints[i], 3);
                 gfx.TextColor(GraphicsContext::red);
                 gfx.TextAtPos(_targetPoints[i] + Vector2D(8, -8), std::to_string(i + 1));
             }
