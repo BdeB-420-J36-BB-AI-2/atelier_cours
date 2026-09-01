@@ -17,7 +17,7 @@ using namespace BdB;
 
 int main()
 {
-	ApplyRavenConfig();
+    Game::ApplyRavenConfig();
     Game::GameTest{}.run();
     // TODO: breakdown
     // - ETQ developpeur, je veux pouvoir créer un arbre de comportement pour mon jeu
