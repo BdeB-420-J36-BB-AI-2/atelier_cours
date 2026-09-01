@@ -15,9 +15,7 @@ namespace Game
     class PlayerBot
     {
     public:
-        PlayerBot(Raven::Raven_Scene& scene, const Vector2D);
-        void HandleInput();
-        void Update();
+        PlayerBot(Raven::Raven_Scene* bot, const Vector2D& startPos);
         void render();
     private:
         Raven::Raven_Bot* _bot;

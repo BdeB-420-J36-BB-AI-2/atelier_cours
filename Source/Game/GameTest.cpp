@@ -38,7 +38,7 @@ namespace Game
         _graph = new SparseGraph<NavGraphNode<>, NavGraphEdge>(true);
         GraphHelper_CreateGrid(*_graph, mapWidth, mapHeight, NumCellsX, NumCellsY);
 
-        _player = new PlayerBot(*_scene, Vector2D(mapWidth * 0.5, mapHeight * 0.5));
+        _player = new PlayerBot(_scene, Vector2D(mapWidth * 0.5, mapHeight * 0.5));
 
         // on recupére 2 noeuds aléatoires du graph
         auto nodeCount = _graph->NumNodes();
@@ -102,9 +102,6 @@ namespace Game
 
     void GameTest::handleInput()
     {
-        // Direction pressed
-        _player->HandleInput();
-
         _loop = !WindowShouldClose();
     }
 
@@ -117,9 +114,6 @@ namespace Game
 
         if (_bot->GetBrain()->isComplete())
             _gameComplete = true;
-
-        // Physics
-        _player->Update();
     }
 
     void GameTest::DrawGameComplete()
