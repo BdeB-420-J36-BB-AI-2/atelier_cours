@@ -123,9 +123,9 @@ namespace Game
 
     void GameTest::render()
     {
-        BeginDrawing();
+        gfx.StartDrawing();
         {
-            ClearBackground(BLANK);
+            gfx.ClearBackground(GfxBlank);
 
             GraphHelper_DrawUsingGDI(*_graph, GraphicsContext::grey);
 
@@ -159,8 +159,7 @@ namespace Game
 
             if (_gameComplete)
                 DrawGameComplete();
-            DrawFPS(20, 20);
         }
-        EndDrawing();
+        gfx.StopDrawing();
     }
 }
