@@ -10,6 +10,8 @@
 #include "BehaviourTree/Core/BlackBoard.h"
 #include "BehaviourTree/Core/LeafNode.h"
 #include "BehaviourTree/Core/Node.h"
+#include "navigation/PathEdge.h"
+#include "navigation/Raven_PathPlanner.h"
 
 using namespace Core;
 using namespace Common;
@@ -114,6 +116,7 @@ namespace Game
         }
     };
 
+    // Move bot to a specific position
     class MoveBotTo : public BehaviourTree::LeafNode
     {
         Vector2D _target;
@@ -138,6 +141,52 @@ namespace Game
             _bot->GetSteering()->ArriveOn();
             _bot->GetSteering()->SetTarget(_target);
             _bot->RotateFacingTowardPosition(_bot->Pos() + _bot->Heading());
+            return BehaviourTree::NodeState::RUNNING;
+        }
+    };
+
+    // Move bot to a specific destination through a navmesh path
+    class MoveBotToDestination : public BehaviourTree::LeafNode
+    {
+        Vector2D _destination;
+        Raven_Bot* _bot;
+        std::list<PathEdge> _path;
+
+    public:
+        MoveBotToDestination(Raven_Bot* bot, Vector2D target)
+            : _bot{ bot }, _destination{ target }
+        {
+            auto* planner = _bot->GetPathPlanner();
+
+            // Si il est possible de marcher directement vers la destination, on rajoute manuellement un PathEdge vers la destination
+            if (_bot->canWalkTo(_destination))
+                _path.emplace_back(_bot->Pos(), _destination, NavGraphEdge::normal);
+            else if (planner->RequestPathToPosition(_destination))
+                _path = planner->GetPath();
+        }
+
+        BehaviourTree::NodeState tick(BehaviourTree::BlackBoard& bb) override
+        {
+            if (_path.empty() || _bot->isAtPosition(_destination))
+            {
+                _bot->GetSteering()->ArriveOff();
+                return BehaviourTree::NodeState::SUCCESS;
+            }
+
+            auto& edge = _path.front();
+            auto edgePosition = edge.Destination();
+
+            if (!_bot->isAtPosition(edgePosition))
+            {
+                bb.set<Vector2D>("CurrentTarget", edgePosition);
+
+                _bot->GetSteering()->ArriveOn();
+                _bot->GetSteering()->SetTarget(edgePosition);
+                _bot->RotateFacingTowardPosition(_bot->Pos() + _bot->Heading());
+            }
+            else
+                _path.pop_front();
+
             return BehaviourTree::NodeState::RUNNING;
         }
     };

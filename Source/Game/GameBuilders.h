@@ -29,5 +29,6 @@ namespace Game
         static BehaviourTree::BehaviourTree* TestMovePlayerToLimit(Player* player);
         static BehaviourTree::BehaviourTree* TestMoveBotTo(Raven::Raven_Bot* bot, Raven::Raven_Scene* scene);
         static BehaviourTree::BehaviourTree* TestTargetDetection(Raven::Raven_Bot* player, Raven::Raven_Bot* bot, const std::vector<Graphics::Vector2D>& wayPoints);
+        static BehaviourTree::BehaviourTree* TestTargetDetectionFromNavMesh(Raven::Raven_Bot* player, Raven::Raven_Bot* bot, const std::vector<Graphics::Vector2D>& targetPoints);
     };
 }

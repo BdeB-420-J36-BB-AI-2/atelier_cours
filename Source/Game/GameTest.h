@@ -35,7 +35,7 @@ namespace Game
     {
         PlayerBot* _player;
         Raven::Raven_Scene* _scene;
-        std::vector<Vector2D> _targetPoints;
+        std::vector<Vector2D> _targetPoints; // TODO: to be deleted, just for testing purpose
         NavMeshGraph* _graph;
 
         bool _gameComplete = false;

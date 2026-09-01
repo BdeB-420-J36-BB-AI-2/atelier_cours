@@ -114,4 +114,29 @@ namespace Game
         bt->setRootNode(ifThenElse);
         return bt;
     }
+
+    BehaviourTree::BehaviourTree* GameBuilders::TestTargetDetectionFromNavMesh(Raven::Raven_Bot* player,
+        Raven::Raven_Bot* bot, const std::vector<Graphics::Vector2D>& targetPoints)
+    {
+        auto bt = new BehaviourTree::BehaviourTree();
+        
+        // Generate a patrol sequence from the target points
+        auto patrolSequence = new BehaviourTree::Sequence();
+        for (auto destination : targetPoints)
+            patrolSequence->add(new MoveBotToDestination(bot, destination));
+
+        BehaviourTree::Node* patrolRepeater = new BehaviourTree::Repeater(patrolSequence);
+
+        // Detect action
+        auto detectPlayer = new IsTargetInRange(bot, player, 150.0f);
+
+        // Chase action
+        auto chasePlayer = new ChaseTarget(bot, player);
+
+        // IfThenElse Decorator
+        auto ifThenElse = new BehaviourTree::IfThenElse(detectPlayer, chasePlayer, patrolRepeater);
+
+        bt->setRootNode(ifThenElse);
+        return bt;
+    }
 }
