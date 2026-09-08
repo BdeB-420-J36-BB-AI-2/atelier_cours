@@ -17,7 +17,14 @@ namespace BehaviourTree
         virtual ~Node() = default;
         virtual NodeState tick(BlackBoard& bb) = 0;
 
+        void reset()
+        {
+            onReset();
+        }
+
     protected:
         Node() = default;
+
+        virtual void onReset() { }
     };
 }

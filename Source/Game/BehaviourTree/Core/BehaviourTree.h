@@ -32,6 +32,12 @@ namespace BehaviourTree
             _rootNode = rootNode;
         }
 
+        void Reset()
+        {
+            if (_rootNode)
+                _rootNode->reset();
+        }
+
         NodeState tick()
         {
             if (!_rootNode)
@@ -50,4 +56,4 @@ namespace BehaviourTree
             return _treeState != NodeState::RUNNING;
         };
     };
-}
+} // namespace BehaviourTree
