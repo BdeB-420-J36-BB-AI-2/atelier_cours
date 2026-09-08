@@ -15,7 +15,7 @@ namespace BehaviourTree
             for (auto i = _currentIndex; i < _nodes.size(); ++i)
             {
                 NodeState state = _nodes[i]->tick(bb);
-                // On enregistre l'index du noeud courant si il est en cours d'exécution, 
+                // On enregistre l'index du noeud courant si il est en cours d'exécution,
                 // pour reprendre à partir de ce noeud lors du prochain tick
                 if (state == NodeState::RUNNING)
                     _currentIndex = i;
@@ -26,6 +26,13 @@ namespace BehaviourTree
 
             _currentIndex = 0;
             return NodeState::SUCCESS;
+        }
+
+    protected:
+        void onReset() override
+        {
+            _currentIndex = 0;
+            CompositeNode::onReset();
         }
     };
 
@@ -40,7 +47,7 @@ namespace BehaviourTree
             {
                 NodeState state = _nodes[i]->tick(bb);
 
-                // On enregistre l'index du noeud courant si il est en cours d'exécution, 
+                // On enregistre l'index du noeud courant si il est en cours d'exécution,
                 // pour reprendre à partir de ce noeud lors du prochain tick
                 if (state == NodeState::RUNNING)
                     _currentIndex = i;
@@ -51,6 +58,13 @@ namespace BehaviourTree
 
             _currentIndex = 0;
             return NodeState::FAILURE;
+        }
+
+    protected:
+        void onReset() override
+        {
+            _currentIndex = 0;
+            CompositeNode::onReset();
         }
     };
 
@@ -76,4 +90,4 @@ namespace BehaviourTree
             return NodeState::RUNNING;
         }
     };
-}
+} // namespace BehaviourTree

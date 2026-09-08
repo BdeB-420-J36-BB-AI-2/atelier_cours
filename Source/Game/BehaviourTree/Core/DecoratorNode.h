@@ -14,5 +14,10 @@ namespace BehaviourTree
 
     protected:
         Node* _child;
+
+        void onReset() override
+        {
+            _child->reset();
+        }
     };
 }
