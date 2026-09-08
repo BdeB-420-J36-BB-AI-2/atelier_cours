@@ -33,7 +33,6 @@ namespace Game
 
     class GameTest : public Core::GameBase
     {
-        PlayerBot* _player; // TODO: To delete
         Raven::Raven_Scene* _scene;
         std::vector<Vector2D> _targetPoints; // TODO: to be deleted, just for testing purpose
         Raven::Raven_Map::NavGraph* _graph;

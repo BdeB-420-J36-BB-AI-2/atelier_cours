@@ -8,7 +8,6 @@
 #include "BehaviourTree/Builders.h"
 
 #include "GameConfig.h"
-#include "PlayerBot.h"
 #include "Raven_Map.h"
 #include "Raven_Panel.h"
 #include "Raven_Scene.h"
@@ -33,7 +32,7 @@ namespace Game
 
         _graph = &_scene->GetMap()->GetNavGraph();
 
-        _player = new PlayerBot(_scene, Vector2D(mapWidth * 0.5, mapHeight * 0.5));
+        auto player = _scene->GetAllBots().back();
 
         for (auto bot : _scene->GetAllBots())
         {
@@ -52,10 +51,8 @@ namespace Game
             auto botStart = _graph->GetNode(spawnPoint).Pos();
             bot->Spawn(botStart);
 
-            bot->SetBrain(GameBuilders::TestTargetDetectionFromNavMesh(_player->getBot(), bot, targetPoints));
+            bot->SetBrain(GameBuilders::TestTargetDetectionFromNavMesh(player, bot, targetPoints));
         }
-
-        _player->getBot()->SetMaxSpeed(4.0);
 
         _loop = true;
     }
@@ -64,9 +61,6 @@ namespace Game
     {
         delete _scene;
         _scene = nullptr;
-
-        delete _player;
-        _player = nullptr;
 
         CloseWindow();
     }
@@ -78,6 +72,12 @@ namespace Game
         auto key = GetKeyPressed();
         if (key == KEY_TAB)
             _showPanel = !_showPanel;
+
+        // checkMouseHover = CheckCollisionPointRec(GetMousePosition(), Rectangle{5.0,5.0});
+        if (!_showPanel && IsMouseButtonPressed(MOUSE_RIGHT_BUTTON))
+        {
+            _scene->ClickRightMouseButton(Vector2D{(double)GetMouseX(), (double)GetMouseY()});
+        }
     }
 
     void GameTest::update()
@@ -110,7 +110,6 @@ namespace Game
 
             GraphHelper_DrawUsingGDI(*_graph, GraphicsContext::grey);
 
-            _player->render();
             _scene->Render();
 
             if (_showPanel)
