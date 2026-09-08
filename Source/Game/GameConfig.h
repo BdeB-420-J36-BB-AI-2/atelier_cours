@@ -60,7 +60,7 @@ namespace Game
     static const double Bot_TargetingUpdateFreq      = 2;
     static const double Bot_TriggerUpdateFreq        = 8;
     static const double Bot_VisionUpdateFreq         = 4;
-    static const double Bot_FOV                      = 180;
+    static const double Bot_FOV                      = 120;
     static const double Bot_ReactionTime             = 0.2;
     static const double Bot_AimPersistance           = 1;
     static const double Bot_AimAccuracy              = 0.0;

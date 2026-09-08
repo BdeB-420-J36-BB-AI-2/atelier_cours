@@ -73,10 +73,11 @@ namespace Game
         if (key == KEY_TAB)
             _showPanel = !_showPanel;
 
-        // checkMouseHover = CheckCollisionPointRec(GetMousePosition(), Rectangle{5.0,5.0});
         if (!_showPanel && IsMouseButtonPressed(MOUSE_RIGHT_BUTTON))
         {
             _scene->ClickRightMouseButton(Vector2D{(double)GetMouseX(), (double)GetMouseY()});
+            if (auto bot = _scene->PossessedBot(); bot && bot->isPossessed())
+                bot->SetMaxSpeed(4.f);
         }
     }
 
@@ -120,4 +121,4 @@ namespace Game
         }
         gfx.StopDrawing();
     }
-}
+} // namespace Game
