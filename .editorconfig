@@ -1,0 +1,18 @@
+root = true
+
+[*.{c,h,cpp,hpp,cc,cxx}]
+indent_style = space
+indent_size = 4
+
+# Function/method bodies: brace on a new line, except single-statement
+# bodies which stay collapsed on one line (see cpp_simple_block_style).
+cpp_invocable_declaration_braces = next_line
+
+# class/struct/union/enum: brace always on a new line.
+cpp_type_declaration_braces = next_line
+
+# Keep single-statement blocks (function bodies, if/for/while, enum) on one line.
+cpp_simple_block_style = on_single_line
+
+# ReSharper properties
+resharper_wrap_before_colon = true
