@@ -10,6 +10,7 @@
 #include "BehaviourTree/Core/BlackBoard.h"
 #include "BehaviourTree/Core/LeafNode.h"
 #include "BehaviourTree/Core/Node.h"
+#include "Messaging/MessageDispatcher.h"
 #include "navigation/PathEdge.h"
 #include "navigation/Raven_PathPlanner.h"
 
@@ -33,7 +34,7 @@ namespace Game
 
         BehaviourTree::NodeState tick(BehaviourTree::BlackBoard& bb) override
         {
-            // On récupère l'acteur du blackboard 
+            // On récupère l'acteur du blackboard
             auto actor = bb.get<Actor*>("Player", nullptr);
             if (!actor)
                 return BehaviourTree::NodeState::FAILURE;
@@ -74,7 +75,7 @@ namespace Game
 
         BehaviourTree::NodeState tick(BehaviourTree::BlackBoard& bb) override
         {
-            // On récupère l'acteur du blackboard 
+            // On récupère l'acteur du blackboard
             auto actor = bb.get<Actor*>("Player", nullptr);
             if (!actor)
                 return BehaviourTree::NodeState::FAILURE;
@@ -100,7 +101,7 @@ namespace Game
 
         BehaviourTree::NodeState tick(BehaviourTree::BlackBoard& bb) override
         {
-            // On récupère l'acteur du blackboard 
+            // On récupère l'acteur du blackboard
             auto actor = bb.get<Actor*>("Player", nullptr);
             if (!actor)
                 return BehaviourTree::NodeState::FAILURE;
@@ -124,7 +125,8 @@ namespace Game
 
     public:
         MoveBotTo(Raven_Bot* bot, Vector2D target)
-            : _bot{bot}, _target{target}
+            : _bot{bot}
+            , _target{target}
         {
         }
 
@@ -145,41 +147,83 @@ namespace Game
         }
     };
 
+    class ResolveBotPathToDestination : public BehaviourTree::LeafNode
+    {
+        Raven_Bot* _bot;
+        Vector2D _destination;
+        Raven_PathPlanner* _planner;
+        bool _requestSent = false;
+
+    public:
+        ResolveBotPathToDestination(Raven_Bot* bot, Vector2D destination)
+            : _bot{bot}
+            , _destination{destination}
+        {
+            _planner = _bot->GetPathPlanner();
+        }
+
+        BehaviourTree::NodeState tick(BehaviourTree::BlackBoard& bb) override
+        {
+            if (!_requestSent)
+            {
+                _planner->RequestPathToPosition(_destination);
+                _requestSent = true;
+            }
+
+            if (_planner->IsPathReady())
+            {
+                _requestSent = false;
+                return BehaviourTree::NodeState::SUCCESS;
+            }
+            return BehaviourTree::NodeState::RUNNING;
+        }
+    };
+
     // Move bot to a specific destination through a navmesh path
     class MoveBotToDestination : public BehaviourTree::LeafNode
     {
         Vector2D _destination;
         Raven_Bot* _bot;
         std::list<PathEdge> _path;
+        bool _pathRetrieved = false;
 
     public:
         MoveBotToDestination(Raven_Bot* bot, Vector2D target)
-            : _bot{ bot }, _destination{ target }
-        {
-            auto* planner = _bot->GetPathPlanner();
-
-            // Si il est possible de marcher directement vers la destination, on rajoute manuellement un PathEdge vers la destination
-            if (_bot->canWalkTo(_destination))
-                _path.emplace_back(_bot->Pos(), _destination, NavGraphEdge::normal);
-            else if (planner->RequestPathToPosition(_destination))
-                _path = planner->GetPath();
-        }
+            : _bot{bot}
+            , _destination{target}
+        {}
 
         BehaviourTree::NodeState tick(BehaviourTree::BlackBoard& bb) override
         {
-            if (_path.empty() || _bot->isAtPosition(_destination))
+            // On test d'abord si le bot est déjà à la destination, si oui on arrête le steering et on retourne SUCCESS
+            if (_bot->isAtPosition(_destination))
             {
                 _bot->GetSteering()->ArriveOff();
+                _pathRetrieved = false;
                 return BehaviourTree::NodeState::SUCCESS;
             }
+
+            if (!_pathRetrieved)
+            {
+                _path = _bot->GetPathPlanner()->GetPath();
+                _pathRetrieved = true;
+            }
+
+            if (_path.empty() && _bot->canWalkTo(_destination))
+            {
+                _bot->GetSteering()->ArriveOn();
+                _bot->GetSteering()->SetTarget(_destination);
+                _bot->RotateFacingTowardPosition(_bot->Pos() + _bot->Heading());
+                return BehaviourTree::NodeState::RUNNING;
+            }
+
+            bb.set<Vector2D>("CurrentTarget", _destination);
 
             auto& edge = _path.front();
             auto edgePosition = edge.Destination();
 
             if (!_bot->isAtPosition(edgePosition))
             {
-                bb.set<Vector2D>("CurrentTarget", edgePosition);
-
                 _bot->GetSteering()->ArriveOn();
                 _bot->GetSteering()->SetTarget(edgePosition);
                 _bot->RotateFacingTowardPosition(_bot->Pos() + _bot->Heading());
@@ -198,7 +242,8 @@ namespace Game
 
     public:
         ChaseTarget(Raven_Bot* bot, Raven_Bot* target)
-            : _bot{bot}, _target{target}
+            : _bot{bot}
+            , _target{target}
         {
         }
 
@@ -222,7 +267,9 @@ namespace Game
 
     public:
         IsTargetInRange(Raven_Bot* bot, Raven_Bot* target, float range)
-            : _bot{bot}, _target{target}, _range{range}
+            : _bot{bot}
+            , _target{target}
+            , _range{range}
         {
         }
 
@@ -233,4 +280,4 @@ namespace Game
             return inRange ? BehaviourTree::NodeState::SUCCESS : BehaviourTree::NodeState::FAILURE;
         }
     };
-}
+} // namespace Game

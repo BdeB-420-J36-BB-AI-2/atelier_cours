@@ -121,9 +121,15 @@ namespace Game
         auto bt = new BehaviourTree::BehaviourTree();
         
         // Generate a patrol sequence from the target points
+        // A cause du path planner chaque demande de resolution de chemin doit se faire avec 1 frame de décalage
+        // - Créer une Node ResolveBotPathToDestination
+        // - Ensuite utilser la Node MoveBotToDestination
         auto patrolSequence = new BehaviourTree::Sequence();
-        for (auto destination : targetPoints)
+        for (auto destination : targetPoints) 
+        {
+            patrolSequence->add(new ResolveBotPathToDestination(bot, destination));
             patrolSequence->add(new MoveBotToDestination(bot, destination));
+        }
 
         BehaviourTree::Node* patrolRepeater = new BehaviourTree::Repeater(patrolSequence);
 
