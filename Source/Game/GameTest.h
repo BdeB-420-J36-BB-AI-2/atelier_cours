@@ -17,6 +17,7 @@ namespace Common
 
 namespace Raven
 {
+    class Raven_Panel;
     class Raven_Scene;
     class Raven_Bot;
 }
@@ -32,12 +33,15 @@ namespace Game
 
     class GameTest : public Core::GameBase
     {
-        PlayerBot* _player;
+        PlayerBot* _player; // TODO: To delete
         Raven::Raven_Scene* _scene;
         std::vector<Vector2D> _targetPoints; // TODO: to be deleted, just for testing purpose
         Raven::Raven_Map::NavGraph* _graph;
+        Raven::Raven_Panel* _panel;
+        std::vector<std::string> _mapFiles;
 
         bool _gameComplete = false;
+        bool _showPanel = false;
     public:
         static constexpr auto margin = 50;
         GameTest();

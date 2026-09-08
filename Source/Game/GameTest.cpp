@@ -10,6 +10,7 @@
 #include "GameConfig.h"
 #include "PlayerBot.h"
 #include "Raven_Map.h"
+#include "Raven_Panel.h"
 #include "Raven_Scene.h"
 #include "Graph/HandyGraphFunctions.h"
 
@@ -24,6 +25,7 @@ namespace Game
         BdB::srandInt(static_cast<int>(time(nullptr)));
 
         _scene = new Raven_Scene();
+        _panel = new Raven_Panel(*_scene);
         _scene->LoadMap("maps/clearDM1.map");
 
         const auto mapWidth = _scene->GetMap()->GetSizeX();
@@ -72,6 +74,10 @@ namespace Game
     void GameTest::handleInput()
     {
         _loop = !WindowShouldClose();
+
+        auto key = GetKeyPressed();
+        if (key == KEY_TAB)
+            _showPanel = !_showPanel;
     }
 
     void GameTest::update()
@@ -104,40 +110,11 @@ namespace Game
 
             GraphHelper_DrawUsingGDI(*_graph, GraphicsContext::grey);
 
-            // display path
-            /*gfx.BluePen();
-            gfx.BlueBrush();
-            for (size_t i = 0; i < _wayPoints.size(); ++i)
-                gfx.Circle(_wayPoints[i], 3);*/
-
-            // display target
-            gfx.RedPen();
-            gfx.RedBrush();
-            for (size_t i = 0; i < _targetPoints.size(); ++i)
-            {
-                gfx.Circle(_targetPoints[i], 3);
-                gfx.TextColor(GraphicsContext::red);
-                gfx.TextAtPos(_targetPoints[i] + Vector2D(8, -8), std::to_string(i + 1));
-            }
-
-
-            gfx.BluePen();
-            gfx.BlueBrush();
-            for (auto bot : _scene->GetAllBots())
-            {
-                auto& bb = bot->GetBrain()->getBlackBoard();
-
-                auto target = bb.get<Vector2D>("CurrentTarget", {});
-                if (target != Vector2D())
-                {
-                    gfx.Circle(target, 3);
-                    gfx.TextColor(GraphicsContext::blue);
-                    gfx.TextAtPos(target + Vector2D(8, -8), "Target");
-                }
-            }
-
             _player->render();
             _scene->Render();
+
+            if (_showPanel)
+                _panel->ProcessUIPanel(_mapFiles);
 
             if (_gameComplete)
                 DrawGameComplete();
