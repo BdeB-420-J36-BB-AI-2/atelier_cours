@@ -70,8 +70,12 @@ namespace Game
         _loop = !WindowShouldClose();
 
         auto key = GetKeyPressed();
+
         if (key == KEY_TAB)
             _showPanel = !_showPanel;
+
+        if (key == KEY_X)
+            _scene->ExorciseAnyPossessedBot();
 
         if (!_showPanel && IsMouseButtonPressed(MOUSE_RIGHT_BUTTON))
         {
