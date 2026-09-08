@@ -66,8 +66,6 @@ namespace Game
         delete _player;
         _player = nullptr;
 
-        delete _graph;
-        _graph = nullptr;
         CloseWindow();
     }
 
