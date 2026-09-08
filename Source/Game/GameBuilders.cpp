@@ -142,7 +142,7 @@ namespace Game
         // IfThenElse Decorator
         auto ifThenElse = new BehaviourTree::IfThenElse(detectPlayer, chasePlayer, patrolRepeater);
 
-        bt->setRootNode(ifThenElse);
+        bt->setRootNode(patrolRepeater);
         return bt;
     }
 }
