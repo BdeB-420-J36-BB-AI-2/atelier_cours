@@ -30,7 +30,7 @@ namespace Game
         const auto mapWidth = _scene->GetMap()->GetSizeX();
         const auto mapHeight = _scene->GetMap()->GetSizeY();
 
-        _graph = &_scene->GetMap()->GetNavGraph();
+        auto map = _scene->GetMap()->GetNavGraph();
 
         auto player = _scene->GetAllBots().back();
 
@@ -38,17 +38,17 @@ namespace Game
         {
             bot->SetMaxSpeed(1.0);
             // on recupére 2 noeuds aléatoires du graph
-            auto nodeCount = _graph->NumNodes();
+            auto nodeCount = map.NumNodes();
             auto startPoint = BdB::randInt(0, nodeCount);
             auto endPoint = BdB::randInt(0, nodeCount);
             auto spawnPoint = BdB::randInt(0, nodeCount);
 
             std::vector<Vector2D> targetPoints;
-            targetPoints.push_back(_graph->GetNode(startPoint).Pos());
-            targetPoints.push_back(_graph->GetNode(endPoint).Pos());
+            targetPoints.push_back(map.GetNode(startPoint).Pos());
+            targetPoints.push_back(map.GetNode(endPoint).Pos());
 
             // Le bot doit être spawné sur le startNode noeud du graph
-            auto botStart = _graph->GetNode(spawnPoint).Pos();
+            auto botStart = map.GetNode(spawnPoint).Pos();
             bot->Spawn(botStart);
 
             bot->SetBrain(GameBuilders::TestTargetDetectionFromNavMesh(player, bot, targetPoints));
@@ -112,8 +112,6 @@ namespace Game
         gfx.StartDrawing();
         {
             gfx.ClearBackground(GfxWhite);
-
-            GraphHelper_DrawUsingGDI(*_graph, GraphicsContext::grey);
 
             _scene->Render();
 
