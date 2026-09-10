@@ -164,6 +164,9 @@ namespace Game
 
         BehaviourTree::NodeState tick(BehaviourTree::BlackBoard& bb) override
         {
+            if (_bot->canWalkTo(_destination))
+                return BehaviourTree::NodeState::SUCCESS;
+
             if (!_requestSent)
             {
                 _planner->RequestPathToPosition(_destination);
@@ -210,7 +213,10 @@ namespace Game
 
             if (!_pathRetrieved)
             {
-                _path = _bot->GetPathPlanner()->GetPath();
+                if (_bot->canWalkTo(_destination))
+                    _path.push_back(PathEdge(_bot->Pos(), _destination, NavGraphEdge::normal));
+                else
+                    _path = _bot->GetPathPlanner()->GetPath();
                 _pathRetrieved = true;
             }
 
