@@ -20,7 +20,7 @@ namespace Raven
     class Raven_Panel;
     class Raven_Scene;
     class Raven_Bot;
-}
+} // namespace Raven
 
 namespace BehaviourTree
 {
@@ -40,8 +40,12 @@ namespace Game
 
         bool _gameComplete = false;
         bool _showPanel = false;
+
+        void InitializeBot(Raven::Raven_Map::NavGraph map, Raven::Raven_Bot* player, Raven::Raven_Bot* bot);
+
     public:
         static constexpr auto margin = 50;
+
         GameTest();
         ~GameTest() override;
 
@@ -49,5 +53,5 @@ namespace Game
         void update() override;
         void DrawGameComplete();
         void render() override;
-    }; 
-}
+    };
+} // namespace Game

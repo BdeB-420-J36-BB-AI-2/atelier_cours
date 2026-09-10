@@ -17,6 +17,23 @@ using namespace Graphics;
 
 namespace Game
 {
+    void GameTest::InitializeBot(Raven_Map::NavGraph map, Raven_Bot* player, Raven_Bot* bot)
+    {
+        auto nodeCount = map.NumNodes();
+        auto startPoint = BdB::randInt(0, nodeCount);
+        auto endPoint = BdB::randInt(0, nodeCount);
+        auto spawnPoint = BdB::randInt(0, nodeCount);
+
+        std::vector<Vector2D> targetPoints;
+        targetPoints.push_back(map.GetNode(startPoint).Pos());
+        targetPoints.push_back(map.GetNode(endPoint).Pos());
+
+        // Le bot doit être spawné sur le startNode noeud du graph
+        auto botStart = map.GetNode(spawnPoint).Pos();
+        bot->Spawn(botStart);
+        bot->SetBrain(GameBuilders::TestTargetDetectionFromNavMesh(player, bot, targetPoints));
+    }
+
     GameTest::GameTest()
     {
         InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "GameTest");
@@ -27,32 +44,11 @@ namespace Game
         _panel = new Raven_Panel(*_scene);
         _scene->LoadMap("maps/clearDM1.map");
 
-        const auto mapWidth = _scene->GetMap()->GetSizeX();
-        const auto mapHeight = _scene->GetMap()->GetSizeY();
-
         auto map = _scene->GetMap()->GetNavGraph();
-
         auto player = _scene->GetAllBots().back();
 
         for (auto bot : _scene->GetAllBots())
-        {
-            bot->SetMaxSpeed(1.0);
-            // on recupére 2 noeuds aléatoires du graph
-            auto nodeCount = map.NumNodes();
-            auto startPoint = BdB::randInt(0, nodeCount);
-            auto endPoint = BdB::randInt(0, nodeCount);
-            auto spawnPoint = BdB::randInt(0, nodeCount);
-
-            std::vector<Vector2D> targetPoints;
-            targetPoints.push_back(map.GetNode(startPoint).Pos());
-            targetPoints.push_back(map.GetNode(endPoint).Pos());
-
-            // Le bot doit être spawné sur le startNode noeud du graph
-            auto botStart = map.GetNode(spawnPoint).Pos();
-            bot->Spawn(botStart);
-
-            bot->SetBrain(GameBuilders::TestTargetDetectionFromNavMesh(player, bot, targetPoints));
-        }
+            InitializeBot(map, player, bot);
 
         _loop = true;
     }
@@ -72,6 +68,20 @@ namespace Game
         auto panelRequest = _panel->TakePendingRequest();
         if (panelRequest.togglePause)
             _scene->TogglePause();
+
+        if (panelRequest.addBot)
+        {
+            // Temporary solution: we add a bot and initialize it with the last player bot as target#
+            auto player = _scene->GetAllBots().back();
+            _scene->AddBots(1);
+            auto bot = _scene->GetAllBots().back();
+            InitializeBot(_scene->GetMap()->GetNavGraph(), player, bot);
+        }
+
+        if (panelRequest.removeBot)
+        {
+            _scene->RemoveBot();
+        }
 
         auto key = GetKeyPressed();
 
