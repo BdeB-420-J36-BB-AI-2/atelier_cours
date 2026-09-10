@@ -69,6 +69,10 @@ namespace Game
     {
         _loop = !WindowShouldClose();
 
+        auto panelRequest = _panel->TakePendingRequest();
+        if (panelRequest.togglePause)
+            _scene->TogglePause();
+
         auto key = GetKeyPressed();
 
         if (key == KEY_TAB)
